@@ -1,49 +1,19 @@
-import React, {useEffect} from 'react';
-import SearchPage from './Components/SearchPage';
-import Hero from './Components/Hero';
-import logo from './logo.svg';
-import coveologo from './coveologo.svg';
+import React, { useEffect } from "react";
 import {
   BrowserRouter as Router,
   Routes,
   Route,
   Navigate,
-} from 'react-router-dom';
-import {Grid, Typography, Box} from '@mui/material';
-import {initializeHeadlessEngine} from './common/Engine';
-import {SearchEngine} from '@coveo/headless';
+} from "react-router-dom";
+import { Grid, Typography, Box } from "@mui/material";
+import { initializeHeadlessEngine } from "./common/Engine";
+import { SearchEngine } from "@coveo/headless";
+import { EngineProvider } from "./common/engineContext";
+import { AtomicSearchInterface } from "@coveo/atomic-react";
+import StandaloneSearchBox from "./Components/CoveoSearchInputComponent";
+import SearchPage from "./Components/CoveoAtomicGlobalSearch";
 
 export default function App() {
-  return (
-    <Router>
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <Navigate to={isEnvValid() === true ? '/home' : '/error'} replace />
-          }
-        />
-        <Route path="/home" element={<Home />} />
-        <Route path="/error" element={<Error />} />
-      </Routes>
-    </Router>
-  );
-}
-
-const isEnvValid = () => {
-  const variables = [
-    'REACT_APP_PLATFORM_URL',
-    'REACT_APP_ORGANIZATION_ID',
-    'REACT_APP_API_KEY',
-    'REACT_APP_USER_EMAIL',
-    'REACT_APP_SERVER_PORT',
-  ];
-  const reducer = (previousValue: boolean, currentValue: string) =>
-    previousValue && Boolean(process.env[currentValue]);
-  return variables.reduce(reducer, true);
-};
-
-const Home = () => {
   const [engine, setEngine] = React.useState<SearchEngine | null>(null);
 
   useEffect(() => {
@@ -52,19 +22,49 @@ const Home = () => {
     });
   }, []);
 
-  if (engine) {
-    return (
-      <div className="App">
-        <Hero
-          logos={[logo, coveologo]}
-          welcome="Welcome to Your Coveo React.js Search Page"
-        />
-        {engine && <SearchPage engine={engine} />}
-      </div>
-    );
-  } else {
-    return <div>Waiting for engine</div>;
-  }
+  return (
+    <>
+      {engine ? (
+        <EngineProvider value={engine}>
+          <AtomicSearchInterface engine={engine} language="en">
+            <Router>
+              <Routes>
+                <Route
+                  path="/"
+                  element={
+                    <Navigate
+                      to={isEnvValid() === true ? "/home" : "/error"}
+                      replace
+                    />
+                  }
+                />
+                <Route
+                  path="/home"
+                  element={<StandaloneSearchBox redirectionUrl="/search" />}
+                />
+                <Route path="/search" element={<SearchPage />} />
+                <Route path="/error" element={<Error />} />
+              </Routes>
+            </Router>
+          </AtomicSearchInterface>
+        </EngineProvider>
+      ) : (
+        <h1>Loading</h1>
+      )}
+    </>
+  );
+}
+const isEnvValid = () => {
+  const variables = [
+    "REACT_APP_PLATFORM_URL",
+    "REACT_APP_ORGANIZATION_ID",
+    "REACT_APP_API_KEY",
+    "REACT_APP_USER_EMAIL",
+    "REACT_APP_SERVER_PORT",
+  ];
+  const reducer = (previousValue: boolean, currentValue: string) =>
+    previousValue && Boolean(process.env[currentValue]);
+  return variables.reduce(reducer, true);
 };
 
 const Error = () => {
