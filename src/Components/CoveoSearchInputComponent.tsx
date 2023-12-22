@@ -6,7 +6,7 @@ import {
   import { useEffect, useState, FunctionComponent, useContext } from 'react';
   import EngineContext from '../common/engineContext';
   
-  export const StandaloneSearchBoxRenderer: FunctionComponent<{
+  export const CoveoStandaloneSearchBoxRenderer: FunctionComponent<{
     controller: StandaloneSearchBox;
   }> = ({ controller }) => {
     const [state, setState] = useState(controller.state);
@@ -32,8 +32,8 @@ import {
     }
   
     return (
-      <div style={{ display: 'flex', flexDirection : "column", justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-        <h2>Coveo Search Box</h2>
+      <div style={{ display: 'flex', flexDirection : "column", justifyContent: 'center', alignItems: 'center' }}>
+        <h2>Coveo Standalone Search Box</h2>
         <input
           style={{ width: '300px', height : "20px" }} // Adjust width as needed
           value={state.value}
@@ -43,7 +43,7 @@ import {
           onKeyDown={(e) => isEnterKey(e) && controller.submit()}
         />
         <ul>
-          {state.suggestions.map((suggestion: any) => {
+          {state.suggestions.map((suggestion) => {
             const value = suggestion.rawValue;
             return (
               <li key={value} onClick={() => controller.selectSuggestion(value)}>
@@ -60,7 +60,7 @@ import {
     const engine = useContext(EngineContext)!;
     const controller = buildStandaloneSearchBox(engine!, { options: props });
   
-    return <StandaloneSearchBoxRenderer controller={controller} />;
+    return <CoveoStandaloneSearchBoxRenderer controller={controller} />;
   };
   
   export default CoveoStandaloneSearchBox;

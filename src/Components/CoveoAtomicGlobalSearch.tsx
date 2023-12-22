@@ -11,6 +11,7 @@ import {
   AtomicFacet,
   AtomicQuerySummary
 } from "@coveo/atomic-react";
+import CoveoStandaloneSearchBox from "./CoveoSearchInputComponent";
 
 interface ISearchPageProps {
   engine: SearchEngine;
@@ -20,6 +21,8 @@ const SearchPageRenderer: React.FunctionComponent<ISearchPageProps> = (
   props
 ) => {
   return (
+    <>
+        <CoveoStandaloneSearchBox redirectionUrl="/search"/>
     <AtomicSearchLayout>
       <AtomicLayoutSection section={"search"}>
         <AtomicSearchBox />
@@ -35,6 +38,7 @@ const SearchPageRenderer: React.FunctionComponent<ISearchPageProps> = (
         <AtomicResultList template={() => <MyDefaultTemplate />} />
       </AtomicLayoutSection>
     </AtomicSearchLayout>
+    </>
   );
 };
 
