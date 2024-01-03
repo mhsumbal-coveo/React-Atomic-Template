@@ -9,7 +9,7 @@ import {
   AtomicResultLink,
   AtomicSearchBox,
   AtomicFacet,
-  AtomicQuerySummary
+  AtomicQuerySummary,
 } from "@coveo/atomic-react";
 import CoveoStandaloneSearchBox from "./CoveoSearchInputComponent";
 
@@ -62,9 +62,6 @@ const SearchPage = () => {
       const { value, analytics } = JSON.parse(data);
       engine.dispatch(updateQuery({ q: value }));
       console.log({ value });
-      engine.executeFirstSearchAfterStandaloneSearchBoxRedirect(analytics);
-    } else {
-      engine.executeFirstSearch();
     }
   }, []);
 
