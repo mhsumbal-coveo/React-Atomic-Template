@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from "react";
-import { SearchEngine, loadQueryActions } from "@coveo/headless";
+import { SearchEngine, loadQueryActions, loadSearchActions, loadSearchAnalyticsActions } from "@coveo/headless";
 import EngineContext from "../common/engineContext";
 import {
   AtomicLayoutSection,
@@ -20,9 +20,10 @@ interface ISearchPageProps {
 const SearchPageRenderer: React.FunctionComponent<ISearchPageProps> = (
   props
 ) => {
+
   return (
     <>
-        <CoveoStandaloneSearchBox redirectionUrl="/search"/>
+    <CoveoStandaloneSearchBox redirectionUrl="/search"/>
     <AtomicSearchLayout>
       <AtomicLayoutSection section={"search"}>
         <AtomicSearchBox />
@@ -54,17 +55,6 @@ const MyDefaultTemplate: React.FC<{}> = () => {
 
 const SearchPage = () => {
   const engine = useContext(EngineContext)!;
-  useEffect(() => {
-    const { updateQuery } = loadQueryActions(engine);
-    const data = localStorage.getItem("coveo_standalone_search_box_data");
-    if (data) {
-      localStorage.removeItem("coveo_standalone_search_box_data");
-      const { value, analytics } = JSON.parse(data);
-      engine.dispatch(updateQuery({ q: value }));
-      console.log({ value });
-    }
-  }, []);
-
   return <SearchPageRenderer engine={engine} />;
 };
 

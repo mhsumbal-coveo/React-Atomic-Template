@@ -1,13 +1,13 @@
 import {
-    buildStandaloneSearchBox,
     StandaloneSearchBoxOptions,
-    StandaloneSearchBox,
+    buildSearchBox,
+    SearchBox
   } from '@coveo/headless';
   import { useEffect, useState, FunctionComponent, useContext } from 'react';
   import EngineContext from '../common/engineContext';
   
   export const CoveoStandaloneSearchBoxRenderer: FunctionComponent<{
-    controller: StandaloneSearchBox;
+    controller: SearchBox;
   }> = ({ controller }) => {
     const [state, setState] = useState(controller.state);
   
@@ -18,29 +18,23 @@ import {
     function isEnterKey(e: React.KeyboardEvent<HTMLInputElement>) {
       return e.key === 'Enter';
     }
-  
-    if (!state) {
-      return null;
-    }
-  
-    if (state.redirectTo) {
-      const { redirectTo, value, analytics } = state;
-      const data = JSON.stringify({ value, analytics });
-      localStorage.setItem('coveo_standalone_search_box_data', data);
-      window.location.href = redirectTo;
-      return null;
-    }
+
   
     return (
       <div style={{ display: 'flex', flexDirection : "column", justifyContent: 'center', alignItems: 'center' }}>
-        <h2>Coveo Standalone Search Box</h2>
+        <h2>Coveo Search Box</h2>
         <input
           style={{ width: '300px', height : "20px" }} // Adjust width as needed
           value={state.value}
           onChange={(e) => {
             controller.updateText(e.target.value);
           }}
-          onKeyDown={(e) => isEnterKey(e) && controller.submit()}
+          onKeyDown={(e) => {
+            if(isEnterKey(e) ){
+              controller.submit();
+              window.location.href = `/search#${state.value && `q=${state.value}`}`
+            }
+          }}
         />
         <ul>
           {state.suggestions.map((suggestion) => {
@@ -58,7 +52,7 @@ import {
   
   const CoveoStandaloneSearchBox = (props: StandaloneSearchBoxOptions) => {
     const engine = useContext(EngineContext)!;
-    const controller = buildStandaloneSearchBox(engine!, { options: props });
+    const controller = buildSearchBox(engine!);
   
     return <CoveoStandaloneSearchBoxRenderer controller={controller} />;
   };
